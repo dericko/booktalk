@@ -70,3 +70,11 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+gem 'dotenv-rails'
+gem 'polars-df'
+gem 'tokenizers'
+gem 'pdf-reader'
+gem 'csv'
+gem 'ruby-openai'
+gem 'optparse'
