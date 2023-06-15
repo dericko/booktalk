@@ -11,7 +11,8 @@ const App = () => {
   };
 
   const handleAskQuestion = async () => {
-    const token = document.querySelector('meta[name="csrf-token"]').content
+    setAnswer("Loading...");
+    const token = document.querySelector('meta[name="csrf-token"]').content;
     try {
       const response = await fetch(`${API}/ask`, {
         method: "POST",
@@ -40,12 +41,7 @@ const App = () => {
         pattern="\w+"
       />
       <button onClick={handleAskQuestion}>Ask</button>
-      <textarea
-        value={answer}
-        rows={6}
-        cols={36}
-        readOnly
-      />
+      <div>{answer}</div>
     </div>
   );
 };
@@ -54,6 +50,8 @@ const styles = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-}
+  maxWidth: "600px",
+  margin: "auto",
+};
 
 export default App;
