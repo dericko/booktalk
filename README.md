@@ -1,11 +1,19 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Rebuilding askmybook.com with react/rails.
 
-Things you may want to cover:
+TODO:
+- [ ] setup react `react react-dom`
+- [ ] setup esbuild `build.js`
+- [ ] basic App.jsx and view/controller setup
+- [ ] ruby script to create csvs
+- [ ] api routing `/ask`
+    - [ ] `/ask` controller for api integrations
+- [ ] cache previous questions
+- [ ] tidy up
 
 * Ruby version
+ruby-3.0.0
 
 * System dependencies
 
