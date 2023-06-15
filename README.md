@@ -20,6 +20,7 @@ ruby-3.0.0
 * Configuration
 
 * Database creation
+`rails db:create`
 
 * Database initialization
 
