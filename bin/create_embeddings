@@ -1,0 +1,97 @@
+#!/usr/bin/env ruby
+
+require 'dotenv/load'
+require 'polars'
+require 'tokenizers'
+require 'optparse'
+require 'pdf-reader'
+require 'csv'
+require 'openai'
+
+# Setup the repl
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: ruby pdf_to_pages.rb [options]"
+  opts.on("--pdf FILENAME", "Name of PDF") do |filename|
+    options[:pdf] = filename
+  end
+end.parse!
+if options[:pdf].nil?
+  puts "Please provide the name of the PDF file using the --pdf option."
+  exit
+end
+
+# Tokenizer to help with chunk size
+@tokenizer = Tokenizers.from_pretrained("gpt2")
+def extract_pages(page_text, index)
+  return ["Page #{index}", "", 0] if page_text.empty?
+  content = page_text.split.join(' ')
+  token_count = @tokenizer.encode(content).tokens.length
+  outputs = ["Page #{index}", content, token_count + 4] # why + 4? something about page break chars?
+  outputs
+end
+
+# Read the PDF
+filename = options[:pdf]
+reader = PDF::Reader.new(filename)
+res = []
+reader.pages.each.with_index(1) do |page, i|
+  content = page.text
+  # has_title = content.match(/[A-Z]{4}/) # can use this to page break
+  res << extract_pages(page.text, i)
+end
+
+# Create csv using DataFrame based on each page
+pages_df = Polars::DataFrame.new({
+  "title" => res.map { |row| row[0] },
+  "content" => res.map { |row| row[1] },
+  "tokens" => res.map { |row| row[2] }
+})
+print pages_df.head
+pages_df.write_csv("book.pdf.pages.csv")
+
+# Get the embeddings from OpenAI
+@client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
+EMBEDDING_MODEL = "text-embedding-ada-002"
+
+def get_embedding(text)
+  if text.empty?
+    return ""
+  end
+  result = @client.embeddings(
+    parameters: {
+      model: EMBEDDING_MODEL,
+      input: text # todo: can batch this
+    }
+  )
+  result.dig("data")[0]["embedding"]
+end
+
+titles_and_embeddings = []
+pages_df.each_row do |row|
+  titles_and_embeddings << [row['title'], get_embedding(row['content'])]
+end
+
+# Ruby Polars doesn't support nested arrays, so we need to convert to a hash
+def convert_to_hash(input)
+  output = []
+  input.each do |item|
+    page = item[0]
+    values = item[1]
+    if values.empty?
+      next
+    end
+    row = { "title" => page }
+    values.each_with_index do |value, index|
+      row[(index + 1).to_s] = value
+    end
+    output << row
+  end
+  output
+end
+
+embeddings_df = Polars::DataFrame.new(convert_to_hash(titles_and_embeddings))
+
+print embeddings_df.head(10)
+
+embeddings_df.write_csv('book.pdf.embeddings.csv')
