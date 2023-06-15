@@ -11,24 +11,24 @@ require 'openai'
 # Setup the repl
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: ruby pdf_to_pages.rb [options]"
-  opts.on("--pdf FILENAME", "Name of PDF") do |filename|
+  opts.banner = 'Usage: ruby pdf_to_pages.rb [options]'
+  opts.on('--pdf FILENAME', 'Name of PDF') do |filename|
     options[:pdf] = filename
   end
 end.parse!
 if options[:pdf].nil?
-  puts "Please provide the name of the PDF file using the --pdf option."
+  puts 'Please provide the name of the PDF file using the --pdf option.'
   exit
 end
 
 # Tokenizer to help with chunk size
-@tokenizer = Tokenizers.from_pretrained("gpt2")
+@tokenizer = Tokenizers.from_pretrained('gpt2')
 def extract_pages(page_text, index)
-  return ["Page #{index}", "", 0] if page_text.empty?
+  return ["Page #{index}", '', 0] if page_text.empty?
+
   content = page_text.split.join(' ')
   token_count = @tokenizer.encode(content).tokens.length
-  outputs = ["Page #{index}", content, token_count + 4] # why + 4? something about page break chars?
-  outputs
+  ["Page #{index}", content, token_count + 4] # why + 4? something about page break chars?
 end
 
 # Read the PDF
@@ -42,29 +42,30 @@ reader.pages.each.with_index(1) do |page, i|
 end
 
 # Create csv using DataFrame based on each page
-pages_df = Polars::DataFrame.new({
-  "title" => res.map { |row| row[0] },
-  "content" => res.map { |row| row[1] },
-  "tokens" => res.map { |row| row[2] }
-})
+pages_df = Polars::DataFrame.new(
+  {
+    'title' => res.map { |row| row[0] },
+    'content' => res.map { |row| row[1] },
+    'tokens' => res.map { |row| row[2] }
+  }
+)
 print pages_df.head
-pages_df.write_csv("book.pdf.pages.csv")
+pages_df.write_csv('book.pdf.pages.csv')
 
 # Get the embeddings from OpenAI
-@client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
-EMBEDDING_MODEL = "text-embedding-ada-002"
+@client = OpenAI::Client.new(access_token: ENV.fetch('OPENAI_API_KEY'))
+EMBEDDING_MODEL = 'text-embedding-ada-002'
 
 def get_embedding(text)
-  if text.empty?
-    return ""
-  end
+  return '' if text.empty?
+
   result = @client.embeddings(
     parameters: {
       model: EMBEDDING_MODEL,
-      input: text # todo: can batch this
+      input: text # TODO: can batch this
     }
   )
-  result.dig("data")[0]["embedding"]
+  result['data'][0]['embedding']
 end
 
 titles_and_embeddings = []
@@ -78,10 +79,9 @@ def convert_to_hash(input)
   input.each do |item|
     page = item[0]
     values = item[1]
-    if values.empty?
-      next
-    end
-    row = { "title" => page }
+    next if values.empty?
+
+    row = { 'title' => page }
     values.each_with_index do |value, index|
       row[(index + 1).to_s] = value
     end
