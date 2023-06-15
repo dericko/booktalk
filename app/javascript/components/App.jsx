@@ -22,7 +22,7 @@ const App = () => {
         body: JSON.stringify({ question: inputValue }),
       });
       const data = await response.json();
-      setAnswer(data.message);
+      setAnswer(data.answer);
     } catch (error) {
       console.error(error);
     }
