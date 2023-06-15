@@ -41,12 +41,19 @@ class Api::V1::AskController < ApplicationController
     puts embeddings_df.head(5)
 
     # get the answer:
-    # 1. turn question into embeddings [1,2,3,...n]
-    # 2. get similarity with q_emb and
-    # 1. question context embeddings
-    # construct prompt to openai.completion API
 
-    "I'm asking a question but don't yet have the context for you. Here's the question: #{question}}"
+    # put the following in a block comment
+    ###
+    # 1. turn question into embeddings [1,2,3,...n]
+    # 2. get similarity between question_embedding and list from doc_embeddings_df
+    # 3. look up the page content from pages_df (this does not need to be a dataframe...) using top similar embeddings's page number
+    # construct prompt using template, page content, and question
+
+    preface = 'Flights is a 2007 fragmentary novel by the Polish author Olga Tokarczuk, who won the 2018 Nobel Prize in Literature. These questions and answers are based on someone who has read the book.\n\n'
+    directions = 'Please keep your answers to three sentences maximum, and speak in complete sentences. Stop speaking once your point is made.\n\nContext that may be useful, pulled from Flights:\n'
+    content = 'TODO'
+
+    preface + directions + "Here is some context: #{content}\n" + question
   end
 
   def get_embedding(text)
