@@ -23,6 +23,7 @@ ruby-3.0.0
 `rails db:create`
 
 * Database initialization
+`rails db:migrate`
 
 * How to run the test suite
 
