@@ -28,11 +28,35 @@ TODO:
 - [x] ruby script to create csvs
 - [x] api routing `/ask`
     - [x] `/ask` controller for api integrations
-- [ ] db etc
+- [x] db etc
     - [x] setup Questions model
     - [x] store/lookup questions
-    - [ ] allow looking up times called?
-- [ ] tidy up
+    - [x] allow looking up times called?
+- [x] tidy up
+- [ ] do the text-to-speech
+    - [ ] see why Resemble /clips is disabled for my acct
+    - [ ] add it to response
+- [ ] frontend
+    - [ ] make it nice
+    - [ ] book image + title
+    - [ ] link to book
+    - [ ] author info + disclaimer that it's not me
+- [ ] tweaks
+    - [ ] seed some questions
+- [ ] tests
+    - [ ] cover the major pieces, priority: ask_helper, ask_controller, openai_service
+- [ ] improvements
+    - [ ] see what's the bottleneck in /ask
+        - [ ] if its reading the csvs, use redis or something in-memory instead of reading every req
+        - [ ] if its openai/completions idk...would need to look into how to speed that up
+    - [ ] pre-processing script
+        - [ ] experiment with other chunks beside pages (chapter headings, for example)
+        - [ ] batch calls to embeddings endpoint (right now its one per page)
+        - [ ] can consolidate the two csvs into one (would it affect performance writing or reading?)
+    - [ ] more context
+        - [ ] look into: does /completions store any previous questions for my api token?
+        - [ ] if so, just let them do it
+        - [ ] if not, append 1 or more previous question to make it more like a chat (perhaps appending every new question up to whatever the limit is)
 
 * Ruby version
 ruby-3.0.0
