@@ -7,6 +7,10 @@ class Api::V1::AskController < ApplicationController
   #
   # Returns an array of question objects.
   def index
+    if params[:secret] != ENV.fetch('PUBLIC_API_SECRET')
+      render json: { error: 'Unauthorized' }, status: :unauthorized
+      return
+    end
     questions = Question.all.order(created_at: :desc)
     render json: questions
   end
