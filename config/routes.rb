@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      post 'ask', to: 'ask#index'
+      get 'ask', to: 'ask#index'
+      post 'ask', to: 'ask#ask'
     end
   end
   root 'home#index'
