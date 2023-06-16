@@ -30,7 +30,7 @@ TODO:
     - [x] `/ask` controller for api integrations
 - [ ] db etc
     - [x] setup Questions model
-    - [ ] store/lookup questions
+    - [x] store/lookup questions
     - [ ] allow looking up times called?
 - [ ] tidy up
 

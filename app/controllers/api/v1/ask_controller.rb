@@ -20,6 +20,7 @@ class Api::V1::AskController < ApplicationController
 
     prev_q = Question.find_by(question: question_text)
     if prev_q
+      prev_q.update(ask_count: prev_q.ask_count + 1)
       render json: { question: prev_q.question, answer: prev_q.answer }
       return
     end
