@@ -15,25 +15,36 @@ COMPLETIONS_API_PARAMS = {
 class Api::V1::AskController < ApplicationController
   def index
     params.require(:question)
-    question = params[:question]
+    question_text = params[:question]
+    question_text += '?' unless question_text.end_with?('?')
 
-    question += '?' unless question.end_with?('?')
+    prev_q = Question.find_by(question: question_text)
+    if prev_q
+      render json: { question: prev_q.question, answer: prev_q.answer }
+      return
+    end
 
-    # TODO: lookup previous questions
-    prompt = generate_prompt(question)
+    context = generate_context(question_text)
+    prompt = generate_prompt(context, question_text)
     puts "Prompt:\n\n #{prompt}\n\n"
     answer = get_completion(prompt)
-    # TODO: cache answer
 
-    render json: { question: question, answer: answer }
+    question = Question.create(
+      question: question_text,
+      context: context,
+      answer: answer,
+      ask_count: 1
+    )
+
+    render json: { question: question.question, answer: question.answer }
   end
 
   private
 
   # TODO: move this to a helper
-  def generate_prompt(question)
+  def generate_context(question_text)
     # Get embeddings
-    question_embeddings = Vector.elements(get_embedding(question))
+    question_embeddings = Vector.elements(get_embedding(question_text))
     embeddings_df = Polars.read_csv('book.pdf.embeddings.csv')
 
     # Find the most similar page title to the question
@@ -52,12 +63,15 @@ class Api::V1::AskController < ApplicationController
 
     # Look up the content for that page
     pages_df = Polars.read_csv('book.pdf.pages.csv')
-    content = pages_df.filter(Polars.col('title') == best_matching_title).head['content'][0]
+    pages_df.filter(Polars.col('title') == best_matching_title).head['content'][0]
+  end
 
+  # TODO: move this to a helper
+  def generate_prompt(context, question_text)
     preface = 'Flights is a 2007 fragmentary novel by the Polish author Olga Tokarczuk, who won the 2018 Nobel Prize in Literature. These questions and answers are based on someone who has read the book.\n\n'
     directions = 'Please keep your answers to three sentences maximum, and speak in complete sentences. Stop speaking once your point is made.\n\nContext that may be useful, pulled from Flights:\n'
 
-    preface + directions + "Here is some context: #{content}\n" + question
+    preface + directions + "Here is some context: #{context}\n" + question_text
   end
 
   def get_embedding(text)
