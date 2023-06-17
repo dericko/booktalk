@@ -70,7 +70,7 @@ end
 
 titles_and_embeddings = []
 pages_df.each_row do |row|
-  titles_and_embeddings << [row['title'], get_embedding(row['content'])]
+  titles_and_embeddings << [row['title'], row['tokens'], get_embedding(row['content'])]
 end
 
 # Ruby Polars doesn't support nested arrays, so we need to convert to a hash
@@ -78,12 +78,13 @@ def convert_to_hash(input)
   output = []
   input.each do |item|
     page = item[0]
-    values = item[1]
+    tokens = item[1]
+    values = item[2]
     next if values.empty?
 
-    row = { 'title' => page }
-    values.each_with_index do |value, index|
-      row[(index + 1).to_s] = value
+    row = { 'title' => page, 'tokens' => tokens }
+    values.each.with_index(1) do |value, index|
+      row[index.to_s] = value
     end
     output << row
   end

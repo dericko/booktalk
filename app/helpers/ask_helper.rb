@@ -2,12 +2,14 @@ require 'polars'
 require 'matrix'
 
 module AskHelper
+  MAX_TOKEN_LENGTH = 800
+  TOP_TITLES_COUNT = 5
   # Looks up most relevant context for the question being asked.
   #
   # Params:
   # - question_embeddings (Array[float]): a list of floats representing the question
   #
-  # Returns a string of top matching page context for the question.
+  # Returns a list of strings representing top matching pages for the question.
   def generate_context(question_embeddings)
     question_embeddings = Vector.elements(question_embeddings)
     embeddings_df = Polars.read_csv('book.pdf.embeddings.csv')
@@ -15,28 +17,41 @@ module AskHelper
     # Find the most similar page title to the question
     similarity_scores = []
     embeddings_df.iter_rows do |row|
-      page_embeddings = Vector.elements(row[1..row.length])
+      page_embeddings = Vector.elements(row[2..row.length])
       score = question_embeddings.dot(page_embeddings) # both are vectors of embeddings
       similarity_scores << score
     end
     embeddings_df.hstack([Polars::Series.new('scores', similarity_scores)], in_place: true)
     embeddings_df.sort!('scores', reverse: true)
 
-    best_matching_title = embeddings_df.head(1)['title'][0]
+    top_titles = embeddings_df.head(TOP_TITLES_COUNT)['title']
+    top_token_counts = embeddings_df.head(TOP_TITLES_COUNT)['tokens']
 
-    # Look up the content for that page
+    titles_for_context = []
+    token_len = 0
+    top_titles.each.with_index do |title, i|
+      break unless top_token_counts[i] + token_len < MAX_TOKEN_LENGTH
+
+      titles_for_context << title
+      token_len += top_token_counts[i]
+    end
+
     pages_df = Polars.read_csv('book.pdf.pages.csv')
-    pages_df.filter(Polars.col('title') == best_matching_title).head['content'][0]
+    pages = pages_df.filter(Polars.col('title').is_in(titles_for_context)).head['content']
+    pages.to_a
   end
 
   # Assembles a prompt to send to OpenAI.
   #
   # Params:
-  # - context (string): the page context.
+  # - context (Array[string]): array of pages.
   # - question_text (string): the question.
   #
   # Returns a string.
   def generate_prompt(context, question_text)
+    # check the tokens in the context
+    context = context.join("\n")
+
     header = "Sahil Lavingia is the founder and CEO of Gumroad, and the author of the book The Minimalist Entrepreneur (also known as TME). These are questions and answers by him. Please keep your answers to three sentences maximum, and speak in complete sentences. Stop speaking once your point is made.\n\nContext that may be useful, pulled from The Minimalist Entrepreneur:\n"
 
     question1 = "\n\n\nQ: How to choose what business to start?\n\nA: First off don't be in a rush. Look around you, see what problems you or other people are facing, and solve one of these problems if you see some overlap with your passions or skills. Or, even if you don't see an overlap, imagine how you would solve that problem anyway. Start super, super small."
