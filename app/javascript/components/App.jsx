@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import "./App.css";
 
 const API = "/api/v1";
+const defaultQuestions = ["What is a minimalist entrepreneur?", "What is your definition of community?", "How do I decide what kind of business I should start?"];
+const getDefaultQuestion = () => defaultQuestions[Math.floor(Math.random() * defaultQuestions.length)];
 
 const App = () => {
   const [answer, setAnswer] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(getDefaultQuestion());
 
   const handleOnChange = (event) => {
     setInputValue(event.target.value);
@@ -34,7 +36,7 @@ const App = () => {
     <div className="AppContainer">
       <div className="HeadingContainer">
         <a href="https://www.amazon.com/Minimalist-Entrepreneur-Great-Founders-More/dp/0593192397">
-          <img src="./assets/tme_cover.png" alt="book cover" />
+          <img src="./assets/tme_cover.png" alt="Cover image for the book The Minimalist Entrepreneur" />
         </a>
         <h1>Ask My Book</h1>
       </div>
