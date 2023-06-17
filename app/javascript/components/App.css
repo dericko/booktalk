@@ -4,4 +4,52 @@
   align-items: center;
   max-width: 600px;
   margin: auto;
+  text-align: center;
+}
+
+.HeadingContainer {
+  margin-top: 5vh;
+  & h1 {
+    font-weight: bold;
+    margin-bottom: 0;
+    font-size: 24px;
+    line-height: 36px;
+  }
+  & img {
+    height: 200px;
+  }
+}
+
+.AskContainer {
+  margin: 1rem auto;
+  max-width: 600px;
+
+  & .Buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  /* & button {
+    display: inline-block;
+    color: white;
+    background: black;
+    margin-top: 1rem;
+    width: auto;
+    padding: 8px 18px;
+  } */
+}
+
+.AnswerContainer {
+  margin-top: 1rem;
+}
+
+.Description {
+  display: block;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.Credits, .Description {
+  color: #777
 }
