@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./App.css";
 
 const API = "/api/v1";
 
@@ -30,7 +31,7 @@ const App = () => {
   };
 
   return (
-    <div style={styles}>
+    <div className="AppContainer">
       <h1>Ask a book</h1>
       <label>Question</label>
       <textarea
@@ -44,14 +45,6 @@ const App = () => {
       <div>{answer}</div>
     </div>
   );
-};
-
-const styles = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  maxWidth: "600px",
-  margin: "auto",
 };
 
 export default App;
