@@ -21,7 +21,6 @@ select,
 textarea,
 button {
   box-sizing: border-box;
-  width: 100%;
   border-radius: 10px;
   font-size: 18px;
   padding: 8px 12px;
@@ -29,12 +28,8 @@ button {
 }
 
 button {
-  display: inline-block;
-  color: white;
-  background: black;
-  margin-top: 1rem;
-  width: auto;
   padding: 8px 18px;
+  border: none;
 }
 
 button:hover {
@@ -42,9 +37,6 @@ button:hover {
 }
 
 button:disabled {
-  background: #ccc;
-  color: #777;
-  border-color: #eee;
   cursor: not-allowed;
 }
 

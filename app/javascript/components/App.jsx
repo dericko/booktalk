@@ -9,6 +9,8 @@ const App = () => {
   const [answer, setAnswer] = useState("");
   const [inputValue, setInputValue] = useState(getDefaultQuestion());
 
+  const isLoading = answer === "Loading...";
+
   const handleOnChange = (event) => {
     setInputValue(event.target.value);
   };
@@ -46,10 +48,10 @@ const App = () => {
           accessible. Ask a question and AI'll answer it in real-time:
         </label>
 
-        <textarea value={inputValue} onChange={handleOnChange} pattern="\w+" />
+        <textarea className="QuestionInput" value={inputValue} onChange={handleOnChange} pattern="\w+" />
         <div className="Buttons">
-          <button onClick={handleAskQuestion}>Ask Question</button>
-          <button disabled onClick={() => console.log("todo")}>I'm Feeling Lucky</button>
+          <button className="AskButton" isabled={isLoading} onClick={handleAskQuestion}>Ask Question</button>
+          <button className="LuckyButton" disabled={isLoading} onClick={() => console.log("todo")}>I'm Feeling Lucky</button>
         </div>
         <div className="AnswerContainer">{answer}</div>
       </div>
