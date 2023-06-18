@@ -109,9 +109,6 @@ const App = () => {
     }
   };
 
-  const shouldShowReset = displayText.length > 0 && !isTyping;
-  const shouldShowButtons = !shouldShowReset;
-
   return (
     <div className="AppContainer">
       <Header />
@@ -133,7 +130,7 @@ const App = () => {
               disabled={isLoading || isTyping}
               onClick={() => handleAskQuestion(inputValue)}
             >
-              Ask Question
+              {isLoading ? "Asking..." : "Ask Question"}
             </button>
             <button
               className="LuckyButton"

@@ -39,11 +39,18 @@
 .AskButton {
   color: white;
   background: black;
+  &:disabled {
+    background: #aaa;
+  }
 }
 
 .LuckyButton {
   background: #eee;
   color: black;
+  &:disabled {
+    background: #ddd;
+    color: #aaa;
+  }
 }
 
 .AnswerContainer, .ResetButton {
