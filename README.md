@@ -36,13 +36,13 @@ TODO:
 - [ ] do the text-to-speech
     - [ ] see why Resemble /clips is disabled for my acct
     - [ ] add it to response
-- [ ] frontend
-    - [ ] make it nice
-    - [ ] book image + title
-    - [ ] link to book
-    - [ ] author info + disclaimer that it's not me
-- [ ] tweaks
-    - [ ] seed some questions
+- [x] frontend
+    - [x] make it nice
+    - [x] book image + title
+    - [x] link to book
+    - [x] author info + disclaimer that it's not me
+- [x] tweaks
+    - [x] seed some questions
 - [ ] tests
     - [ ] cover the major pieces, priority: ask_helper, ask_controller, openai_service
 - [ ] improvements
