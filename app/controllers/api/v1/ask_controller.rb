@@ -15,6 +15,14 @@ class Api::V1::AskController < ApplicationController
     render json: questions
   end
 
+  # Looks up a question by id.
+  #
+  # Returns json response with the question and answer.
+  def show
+    question = Question.find(params[:id])
+    render json: { question: question.question, answer: question.answer, questionId: question.id }
+  end
+
   # Asks a question.
   #
   # Returns json response with the question and answer.
@@ -24,7 +32,7 @@ class Api::V1::AskController < ApplicationController
     prev_q = Question.find_by(question: question_text)
     if prev_q
       prev_q.update(ask_count: prev_q.ask_count + 1)
-      render json: { question: prev_q.question, answer: prev_q.answer }
+      render json: { question: prev_q.question, answer: prev_q.answer, questionId: prev_q.id }
       return
     end
 
@@ -43,7 +51,7 @@ class Api::V1::AskController < ApplicationController
 
     print "\n\n## Prompt ##\n #{prompt}\n\n"
 
-    render json: { question: question.question, answer: question.answer }
+    render json: { question: question.question, answer: question.answer, questionId: question.id }
   end
 
   private

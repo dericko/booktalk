@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "./App.css";
 
 const API = "/api/v1";
@@ -7,12 +8,31 @@ const defaultQuestions = [
   "What is your definition of community?",
   "How do I decide what kind of business I should start?",
 ];
+
 const getRandomQuestion = () =>
   defaultQuestions[Math.floor(Math.random() * defaultQuestions.length)];
 
 const App = () => {
   const [answer, setAnswer] = useState("");
   const [inputValue, setInputValue] = useState(getRandomQuestion());
+  const navigate = useNavigate();
+  const { questionId } = useParams();
+
+  useEffect(() => {
+    if (questionId) {
+      const fetchAnswerById = async () => {
+        const response = await fetch(`${API}/ask/${questionId}`);
+        const { answer, question } = await response.json();
+        setInputValue(question);
+        setAnswer(answer);
+      };
+      try {
+        fetchAnswerById();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [questionId]);
 
   const isLoading = answer === "Loading...";
 
@@ -23,8 +43,8 @@ const App = () => {
   const handleAskQuestion = async (question) => {
     setInputValue(question);
     setAnswer("Loading...");
-    const token = document.querySelector('meta[name="csrf-token"]').content;
     try {
+      const token = document.querySelector('meta[name="csrf-token"]').content;
       const response = await fetch(`${API}/ask`, {
         method: "POST",
         headers: {
@@ -33,8 +53,9 @@ const App = () => {
         },
         body: JSON.stringify({ question }),
       });
-      const data = await response.json();
-      setAnswer(data.answer);
+      const { answer, questionId } = await response.json();
+      navigate(`/questions/${questionId}`);
+      setAnswer(answer);
     } catch (error) {
       console.error(error);
     }
@@ -45,7 +66,7 @@ const App = () => {
       <div className="HeadingContainer">
         <a href="https://www.amazon.com/Minimalist-Entrepreneur-Great-Founders-More/dp/0593192397">
           <img
-            src="./assets/tme_cover.png"
+            src="../assets/tme_cover.png"
             alt="Cover image for the book The Minimalist Entrepreneur"
           />
         </a>
