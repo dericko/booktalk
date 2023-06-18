@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./App.css";
 import { BOOK_INFO, API, COPY } from "../constants.js";
@@ -7,8 +7,6 @@ const getRandomQuestion = () =>
   BOOK_INFO.defaultQuestions[
     Math.floor(Math.random() * BOOK_INFO.defaultQuestions.length)
   ];
-
-const LOADING_TEXT = "Loading...";
 
 const Header = () => (
   <div className="HeadingContainer">
@@ -31,11 +29,32 @@ const Footer = () => (
   </>
 );
 
+function randomInt(min, max) {
+  return min + Math.floor((max - min) * Math.random());
+}
+
 const App = () => {
   const [answer, setAnswer] = useState("");
   const [inputValue, setInputValue] = useState(getRandomQuestion());
   const navigate = useNavigate();
   const { questionId } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const inputRef = useRef();
+
+  const [index, setIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  useEffect(() => {
+    if (index < answer.length) {
+      setIsTyping(true);
+      setTimeout(() => {
+        setDisplayText(displayText + answer[index]);
+        setIndex(index + 1);
+      }, randomInt(20, 60));
+    } else {
+      setIsTyping(false);
+    }
+  }, [answer, index, displayText]);
 
   useEffect(() => {
     if (questionId) {
@@ -53,15 +72,23 @@ const App = () => {
     }
   }, [questionId]);
 
-  const isLoading = answer === LOADING_TEXT;
-
   const handleOnChange = (event) => {
     setInputValue(event.target.value);
   };
 
+  const handleReset = () => {
+    setAnswer("");
+    setInputValue("");
+    setDisplayText("");
+    navigate("/");
+    setIndex(0);
+    inputRef.current.focus();
+  };
+
   const handleAskQuestion = async (question) => {
     setInputValue(question);
-    setAnswer(LOADING_TEXT);
+    setIsLoading(true);
+    setDisplayText("");
     try {
       const token = document.querySelector('meta[name="csrf-token"]').content;
       const response = await fetch(`${API}/ask`, {
@@ -74,11 +101,16 @@ const App = () => {
       });
       const { answer, questionId } = await response.json();
       navigate(`/questions/${questionId}`);
+      setIsLoading(false);
+      console.log(answer)
       setAnswer(answer);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const shouldShowReset = displayText.length > 0 && !isTyping;
+  const shouldShowButtons = !shouldShowReset;
 
   return (
     <div className="AppContainer">
@@ -86,30 +118,38 @@ const App = () => {
       <div className="AskContainer">
         <label className="Description">{COPY.description}</label>
         <textarea
+          autoFocus
+          ref={inputRef}
           className="QuestionInput"
           value={inputValue}
           onChange={handleOnChange}
           pattern="\w+"
+          readOnly={isLoading}
         />
-        <div className="Buttons">
-          <button
-            className="AskButton"
-            disabled={isLoading}
-            onClick={() => handleAskQuestion(inputValue)}
-          >
-            Ask Question
-          </button>
-          <button
-            className="LuckyButton"
-            disabled={isLoading}
-            onClick={() => {
-              handleAskQuestion(getRandomQuestion());
-            }}
-          >
-            I'm Feeling Lucky
-          </button>
-        </div>
-        <div className="AnswerContainer">{answer}</div>
+        {displayText.length === 0 && (
+          <div className="Buttons">
+            <button
+              className="AskButton"
+              disabled={isLoading || isTyping}
+              onClick={() => handleAskQuestion(inputValue)}
+            >
+              Ask Question
+            </button>
+            <button
+              className="LuckyButton"
+              disabled={isLoading || isTyping}
+              onClick={() => {
+                handleAskQuestion(getRandomQuestion());
+              }}
+            >
+              I'm Feeling Lucky
+            </button>
+          </div>
+        )}
+        {!isLoading && <div className="AnswerContainer"><strong>Answer: </strong>{displayText}</div>}
+        {displayText.length > 0 && !isTyping && (
+          <button className="ResetButton" onClick={handleReset}>Ask another question</button>
+        )}
       </div>
       <Footer />
     </div>

@@ -21,7 +21,7 @@
 }
 
 .QuestionInput {
-  width: 100%
+  width: 100%;
 }
 
 .AskContainer {
@@ -46,8 +46,10 @@
   color: black;
 }
 
-.AnswerContainer {
+.AnswerContainer, .ResetButton {
   margin-top: 1rem;
+  display: block;
+  text-align: left;
 }
 
 .Description {
