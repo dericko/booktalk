@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./App.css";
-
-const API = "/api/v1";
-const defaultQuestions = [
-  "What is a minimalist entrepreneur?",
-  "What is your definition of community?",
-  "How do I decide what kind of business I should start?",
-];
+import { BOOK_INFO, API, COPY } from "../constants.js";
 
 const getRandomQuestion = () =>
-  defaultQuestions[Math.floor(Math.random() * defaultQuestions.length)];
+  BOOK_INFO.defaultQuestions[
+    Math.floor(Math.random() * BOOK_INFO.defaultQuestions.length)
+  ];
+
+const LOADING_TEXT = "Loading...";
+
+const Header = () => (
+  <div className="HeadingContainer">
+    <a href={BOOK_INFO.amazonLink}>
+      <img src={BOOK_INFO.imageUrl} alt={BOOK_INFO.imageAlt} />
+    </a>
+    <h1>{COPY.heading}</h1>
+  </div>
+);
+
+const Footer = () => (
+  <>
+    <label className="Credits">
+      Based on <a href="https://askmybook.com">askmybook.com</a> | View source:{" "}
+      <a href="https://github.com/dericko/rera-askmybook">github.com/dericko</a>
+    </label>
+    <label className="Credits">
+      For entertainment only. I don't own this book nor any rights to it.
+    </label>
+  </>
+);
 
 const App = () => {
   const [answer, setAnswer] = useState("");
@@ -34,7 +53,7 @@ const App = () => {
     }
   }, [questionId]);
 
-  const isLoading = answer === "Loading...";
+  const isLoading = answer === LOADING_TEXT;
 
   const handleOnChange = (event) => {
     setInputValue(event.target.value);
@@ -42,7 +61,7 @@ const App = () => {
 
   const handleAskQuestion = async (question) => {
     setInputValue(question);
-    setAnswer("Loading...");
+    setAnswer(LOADING_TEXT);
     try {
       const token = document.querySelector('meta[name="csrf-token"]').content;
       const response = await fetch(`${API}/ask`, {
@@ -63,21 +82,9 @@ const App = () => {
 
   return (
     <div className="AppContainer">
-      <div className="HeadingContainer">
-        <a href="https://www.amazon.com/Minimalist-Entrepreneur-Great-Founders-More/dp/0593192397">
-          <img
-            src="../assets/tme_cover.png"
-            alt="Cover image for the book The Minimalist Entrepreneur"
-          />
-        </a>
-        <h1>Ask My Book</h1>
-      </div>
+      <Header />
       <div className="AskContainer">
-        <label className="Description">
-          This is an experiment in using AI to make my book's content more
-          accessible. Ask a question and AI'll answer it in real-time:
-        </label>
-
+        <label className="Description">{COPY.description}</label>
         <textarea
           className="QuestionInput"
           value={inputValue}
@@ -104,13 +111,7 @@ const App = () => {
         </div>
         <div className="AnswerContainer">{answer}</div>
       </div>
-      <label className="Credits">
-        Based on <a href="https://askmybook.com">askmybook.com</a> | View
-        source:{" "}
-        <a href="https://github.com/dericko/rera-askmybook">
-          github.com/dericko
-        </a>
-      </label>
+      <Footer />
     </div>
   );
 };
