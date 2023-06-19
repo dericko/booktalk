@@ -5,7 +5,7 @@ module AskHelper
   MAX_TOKEN_LENGTH = 800
   TOP_TITLES_COUNT = 5
   PAGES_CSV_PATH = ENV.fetch('PAGES_CSV_PATH')
-  EMBEDDINGS_CSV_PATH = ENV.fetch('PAGES_CSV_PATH')
+  EMBEDDINGS_CSV_PATH = ENV.fetch('EMBEDDINGS_CSV_PATH')
   # Looks up most relevant context for the question being asked.
   #
   # Params:
