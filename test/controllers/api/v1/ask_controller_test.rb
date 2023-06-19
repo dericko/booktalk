@@ -37,7 +37,7 @@ class Api::V1::AskControllerTest < ActionDispatch::IntegrationTest
     completion_text = 'Some completion'
     @service_mock.expect :get_embedding, Array.new(EMBEDDING_LENGTH, 0), [formatted_question_text]
     @service_mock.expect :get_completion, completion_text, [String]
-    OpenAIService.stub(:new, @service_mock) do
+    OpenaiService.stub(:new, @service_mock) do
       assert_difference('Question.count', 1) do
         post api_v1_ask_create_url, params: { question: question_text }
         assert_equal(

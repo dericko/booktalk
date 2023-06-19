@@ -36,7 +36,7 @@ class Api::V1::AskController < ApplicationController
       return
     end
 
-    openai = OpenAIService.new
+    openai = OpenaiService.new
     question_embeddings = openai.get_embedding(question_text)
     context = generate_context(question_embeddings)
     prompt = generate_prompt(context, question_text)

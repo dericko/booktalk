@@ -1,6 +1,6 @@
 require 'openai'
 
-class OpenAIService
+class OpenaiService
   EMBEDDINGS_MODEL = 'text-embedding-ada-002'
   COMPLETIONS_MODEL = 'text-davinci-003'
 
