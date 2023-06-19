@@ -49,7 +49,7 @@ class Api::V1::AskController < ApplicationController
       ask_count: 1
     )
 
-    print "\n\n## Prompt ##\n #{prompt}\n\n"
+    print "\n\n## Prompt ##\n #{prompt}\n\n" if Rails.env.development?
 
     render json: { question: question.question, answer: question.answer, questionId: question.id }
   end
