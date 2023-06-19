@@ -16,6 +16,8 @@ module AskHelper
     question_embeddings = Vector.elements(question_embeddings)
     embeddings_df = Polars.read_csv(EMBEDDINGS_CSV_PATH)
 
+    print embeddings_df.head(3)
+
     # Find the most similar page title to the question
     similarity_scores = []
     embeddings_df.iter_rows do |row|
@@ -39,6 +41,7 @@ module AskHelper
     end
 
     pages_df = Polars.read_csv(PAGES_CSV_PATH)
+    print pages_df.head(3)
     pages = pages_df.filter(Polars.col('title').is_in(titles_for_context)).head['content']
     pages.to_a
   end
