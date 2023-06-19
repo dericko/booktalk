@@ -21,8 +21,9 @@ This will generate two csv files: `book.pdf.pages.csv` and `book.pdf.embeddings.
 bin/dev
 ```
 
+## Info
 * Ruby version
-ruby-3.0.0
+`ruby-3.0.0`
 
 * View available routes
 `rails routes`
@@ -38,7 +39,7 @@ ruby-3.0.0
 
 * Deployment instructions
 
-TODO:
+## TODO:
 - [x] setup react `react react-dom`
 - [x] setup esbuild `build.js`
 - [x] basic App.jsx and view/controller setup
