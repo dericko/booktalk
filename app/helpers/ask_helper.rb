@@ -4,6 +4,8 @@ require 'matrix'
 module AskHelper
   MAX_TOKEN_LENGTH = 800
   TOP_TITLES_COUNT = 5
+  PAGES_CSV_PATH = ENV.fetch('PAGES_CSV_PATH')
+  EMBEDDINGS_CSV_PATH = ENV.fetch('PAGES_CSV_PATH')
   # Looks up most relevant context for the question being asked.
   #
   # Params:
@@ -12,7 +14,7 @@ module AskHelper
   # Returns a list of strings representing top matching pages for the question.
   def generate_context(question_embeddings)
     question_embeddings = Vector.elements(question_embeddings)
-    embeddings_df = Polars.read_csv('book.pdf.embeddings.csv')
+    embeddings_df = Polars.read_csv(EMBEDDINGS_CSV_PATH)
 
     # Find the most similar page title to the question
     similarity_scores = []
@@ -36,7 +38,7 @@ module AskHelper
       token_len += top_token_counts[i]
     end
 
-    pages_df = Polars.read_csv('book.pdf.pages.csv')
+    pages_df = Polars.read_csv(PAGES_CSV_PATH)
     pages = pages_df.filter(Polars.col('title').is_in(titles_for_context)).head['content']
     pages.to_a
   end
