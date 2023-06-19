@@ -80,7 +80,6 @@ const App = () => {
 
   const handleReset = () => {
     setAnswer("");
-    setInputValue("");
     setDisplayText("");
     navigate("/");
     setIndex(0);
@@ -123,7 +122,7 @@ const App = () => {
           value={inputValue}
           onChange={handleOnChange}
           pattern="\w+"
-          readOnly={isLoading}
+          disabled={isLoading}
         />
         {displayText.length === 0 && (
           <div className="Buttons">
