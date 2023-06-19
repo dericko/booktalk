@@ -8,12 +8,14 @@ const getRandomQuestion = () =>
     Math.floor(Math.random() * BOOK_INFO.defaultQuestions.length)
   ];
 
-const Header = () => (
+const Header = ({ handleReset }) => (
   <div className="HeadingContainer">
     <a href={BOOK_INFO.amazonLink}>
       <img src={BOOK_INFO.imageUrl} alt={BOOK_INFO.imageAlt} />
     </a>
-    <h1>{COPY.heading}</h1>
+    <a href="/" onClick={handleReset}>
+      <h1>{COPY.heading}</h1>
+    </a>
   </div>
 );
 
@@ -102,7 +104,7 @@ const App = () => {
       const { answer, questionId } = await response.json();
       navigate(`/questions/${questionId}`);
       setIsLoading(false);
-      console.log(answer)
+      console.log(answer);
       setAnswer(answer);
     } catch (error) {
       console.error(error);
@@ -111,7 +113,7 @@ const App = () => {
 
   return (
     <div className="AppContainer">
-      <Header />
+      <Header handleReset={handleReset} />
       <div className="AskContainer">
         <label className="Description">{COPY.description}</label>
         <textarea
@@ -143,9 +145,16 @@ const App = () => {
             </button>
           </div>
         )}
-        {!isLoading && <div className="AnswerContainer">{displayText && <strong>Answer: </strong>}{displayText}</div>}
+        {!isLoading && (
+          <div className="AnswerContainer">
+            {displayText && <strong>Answer: </strong>}
+            {displayText}
+          </div>
+        )}
         {displayText.length > 0 && !isTyping && (
-          <button className="ResetButton" onClick={handleReset}>Ask another question</button>
+          <button className="ResetButton" onClick={handleReset}>
+            Ask another question
+          </button>
         )}
       </div>
       <Footer />
