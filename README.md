@@ -21,6 +21,23 @@ This will generate two csv files: `book.pdf.pages.csv` and `book.pdf.embeddings.
 bin/dev
 ```
 
+* Ruby version
+ruby-3.0.0
+
+* View available routes
+`rails routes`
+
+* Database creation
+`rails db:create`
+
+* Database initialization
+`rails db:migrate`
+
+* How to run the test suite
+`bin/dev test`
+
+* Deployment instructions
+
 TODO:
 - [x] setup react `react react-dom`
 - [x] setup esbuild `build.js`
@@ -43,8 +60,8 @@ TODO:
     - [x] author info + disclaimer that it's not me
 - [x] tweaks
     - [x] seed some questions
-- [ ] tests
-    - [ ] cover the major pieces, priority: ask_helper, ask_controller, openai_service
+- [x] tests
+    - [x] cover the major pieces, priority: ask_helper, ask_controller, openai_service
 - [ ] improvements
     - [ ] see what's the bottleneck in /ask
         - [ ] if its reading the csvs, use redis or something in-memory instead of reading every req
@@ -57,17 +74,3 @@ TODO:
         - [ ] look into: does /completions store any previous questions for my api token?
         - [ ] if so, just let them do it
         - [ ] if not, append 1 or more previous question to make it more like a chat (perhaps appending every new question up to whatever the limit is)
-
-* Ruby version
-ruby-3.0.0
-
-* Database creation
-`rails db:create`
-
-* Database initialization
-`rails db:migrate`
-
-* How to run the test suite
-TODO: it's not working!
-
-* Deployment instructions
