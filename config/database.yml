@@ -4,19 +4,16 @@ default: &default
   timeout: 5000
 
 development:
-  adapter: postgresql
-  database: my_database_development
-  pool: 5
-  timeout: 5000
+  <<: *default
+  database: askmybook_development
 
 test:
-  adapter: postgresql
-  database: my_database_test
-  pool: 5
-  timeout: 5000
+  <<: *default
+  database: askmybook_test
 
 production:
-  adapter: postgresql
-  database: my_database_production
-  pool: 5
-  timeout: 5000
+  <<: *default
+  database: askmyboook_production
+  username: askmybook
+  password: <%= ENV['MYSITE_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
