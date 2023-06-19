@@ -31,9 +31,25 @@ const Footer = () => (
   </>
 );
 
-function randomInt(min, max) {
-  return min + Math.floor((max - min) * Math.random());
-}
+const randomInt = (min, max) => min + Math.floor((max - min) * Math.random());
+
+const useTypingEffect = (text) => {
+  const [isTyping, setIsTyping] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  useEffect(() => {
+    if (index < text.length) {
+      setIsTyping(true);
+      setTimeout(() => {
+        setDisplayText(displayText + text[index]);
+        setIndex(index + 1);
+      }, randomInt(20, 60));
+    } else {
+      setIsTyping(false);
+    }
+  }, [text, index, displayText]);
+  return { isTyping, setIndex, displayText, setDisplayText };
+};
 
 const App = () => {
   const [answer, setAnswer] = useState("");
@@ -41,22 +57,10 @@ const App = () => {
   const navigate = useNavigate();
   const { questionId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef();
 
-  const [index, setIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  useEffect(() => {
-    if (index < answer.length) {
-      setIsTyping(true);
-      setTimeout(() => {
-        setDisplayText(displayText + answer[index]);
-        setIndex(index + 1);
-      }, randomInt(20, 60));
-    } else {
-      setIsTyping(false);
-    }
-  }, [answer, index, displayText]);
+  const { isTyping, setIndex, displayText, setDisplayText } =
+    useTypingEffect(answer);
 
   useEffect(() => {
     if (questionId) {
@@ -103,7 +107,6 @@ const App = () => {
       const { answer, questionId } = await response.json();
       navigate(`/questions/${questionId}`);
       setIsLoading(false);
-      console.log(answer);
       setAnswer(answer);
     } catch (error) {
       console.error(error);
