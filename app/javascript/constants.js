@@ -9,7 +9,7 @@ const defaultQuestions = [
 ];
 const amazonLink =
   "https://www.amazon.com/Flights-Olga-Tokarczuk/dp/0525534202";
-const imageUrl = "../assets/flights_cover.jpg";
+const imageUrl = "https://m.media-amazon.com/images/I/41CDpsiFjQL._SX318_BO1,204,203,200_.jpg";
 const imageAlt = "Cover image for the book Flights";
 
 export const BOOK_INFO = {
