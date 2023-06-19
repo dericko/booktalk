@@ -36,7 +36,7 @@
   }
 }
 
-.AskButton {
+.AskButton, .ResetButton {
   color: white;
   background: black;
   &:disabled {

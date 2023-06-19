@@ -143,7 +143,7 @@ const App = () => {
             </button>
           </div>
         )}
-        {!isLoading && <div className="AnswerContainer"><strong>Answer: </strong>{displayText}</div>}
+        {!isLoading && <div className="AnswerContainer">{displayText && <strong>Answer: </strong>}{displayText}</div>}
         {displayText.length > 0 && !isTyping && (
           <button className="ResetButton" onClick={handleReset}>Ask another question</button>
         )}
