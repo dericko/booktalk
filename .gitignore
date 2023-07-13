@@ -43,3 +43,4 @@ yarn-error.log
 .env
 *.pdf
 *.csv
+.DS_Store
