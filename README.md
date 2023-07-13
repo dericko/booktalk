@@ -1,6 +1,6 @@
 # README
 
-Rebuilding askmybook.com with react/rails.
+Based on [askmybook.com](https://askmybook.com/)(askmybook.com). Rebuilding with react/rails.
 
 ## Dependencies
 See `Gemfile` and `package.json` for dependencies. Install them with:
@@ -8,6 +8,8 @@ See `Gemfile` and `package.json` for dependencies. Install them with:
 bundle install
 yarn install
 ```
+- postgres
+- pg-vector
 
 ## Setup
 Run the script `bin/generate_embeddings` with `book.pdf` in root
@@ -51,27 +53,17 @@ bin/dev
     - [x] store/lookup questions
     - [x] allow looking up times called?
 - [x] tidy up
-- [ ] do the text-to-speech
-    - [ ] see why Resemble /clips is disabled for my acct
-    - [ ] add it to response
-- [x] frontend
-    - [x] make it nice
-    - [x] book image + title
-    - [x] link to book
-    - [x] author info + disclaimer that it's not me
+- [x] frontend design
 - [x] tweaks
     - [x] seed some questions
 - [x] tests
     - [x] cover the major pieces, priority: ask_helper, ask_controller, openai_service
 - [ ] improvements
-    - [ ] see what's the bottleneck in /ask
-        - [ ] if its reading the csvs, use redis or something in-memory instead of reading every req
-        - [ ] if its openai/completions idk...would need to look into how to speed that up
+    - [ ] storage/lookup
+        - store embeddings in pg (use pgvector)
     - [ ] pre-processing script
         - [ ] experiment with other chunks beside pages (chapter headings, for example)
-        - [ ] batch calls to embeddings endpoint (right now its one per page)
-        - [ ] can consolidate the two csvs into one (would it affect performance writing or reading?)
-    - [ ] more context
-        - [ ] look into: does /completions store any previous questions for my api token?
-        - [ ] if so, just let them do it
-        - [ ] if not, append 1 or more previous question to make it more like a chat (perhaps appending every new question up to whatever the limit is)
+        - [ ] batch calls to embeddings endpoint (right now it's one per page)
+    - [ ] context
+        - [ ] store previous Q+A
+        - [ ] add more metadata (loc in book)
