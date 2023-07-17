@@ -11,6 +11,7 @@ gem "sprockets-rails"
 
 # use pg
 gem 'pg'
+gem 'neighbor' # pg-vector search
 
 
 # Use the Puma web server [https://github.com/puma/puma]

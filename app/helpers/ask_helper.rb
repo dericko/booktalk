@@ -1,6 +1,3 @@
-require 'polars'
-require 'matrix'
-
 module AskHelper
   MAX_TOKEN_LENGTH = 800
   TOP_TITLES_COUNT = 5
@@ -13,37 +10,18 @@ module AskHelper
   #
   # Returns a list of strings representing top matching pages for the question.
   def generate_context(question_embeddings)
-    question_embeddings = Vector.elements(question_embeddings)
-    embeddings_df = Polars.read_csv(EMBEDDINGS_CSV_PATH)
+    top_docs = Document.nearest_neighbors(:embeddings, question_embeddings, distance: 'cosine').first(5)
 
-    print embeddings_df.head(3)
-
-    # Find the most similar page title to the question
-    similarity_scores = []
-    embeddings_df.iter_rows do |row|
-      page_embeddings = Vector.elements(row[2..row.length])
-      score = question_embeddings.dot(page_embeddings) # both are vectors of embeddings
-      similarity_scores << score
-    end
-    embeddings_df.hstack([Polars::Series.new('scores', similarity_scores)], in_place: true)
-    embeddings_df.sort!('scores', reverse: true)
-
-    top_titles = embeddings_df.head(TOP_TITLES_COUNT)['title']
-    top_token_counts = embeddings_df.head(TOP_TITLES_COUNT)['tokens']
-
-    titles_for_context = []
+    context = []
     token_len = 0
-    top_titles.each.with_index do |title, i|
-      break unless top_token_counts[i] + token_len < MAX_TOKEN_LENGTH
+    top_docs.each do |doc|
+      token_len += doc.tokens
+      break unless token_len < MAX_TOKEN_LENGTH # add extra page(s) if they're short enough
 
-      titles_for_context << title
-      token_len += top_token_counts[i]
+      context << "#{doc.title}\n#{doc.content}"
     end
 
-    pages_df = Polars.read_csv(PAGES_CSV_PATH)
-    print pages_df.head(3)
-    pages = pages_df.filter(Polars.col('title').is_in(titles_for_context)).head['content']
-    pages.to_a
+    context
   end
 
   # Assembles a prompt to send to OpenAI.

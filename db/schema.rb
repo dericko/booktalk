@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_144012) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_17_173159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "vector"
+
+  create_table "documents", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.integer "tokens"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.vector "embeddings", limit: 1536
+  end
 
   create_table "questions", force: :cascade do |t|
     t.string "question", null: false
