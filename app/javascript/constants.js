@@ -24,5 +24,8 @@ export const API = "/api/v1";
 export const COPY = {
   heading: "Ask Her Book",
   description:
-    "This is an experiment in using AI to make a book's content more accessible. Ask a question and AI'll answer it in real-time:",
+    "Hi, this is an experiment in using AI to make the contents of a book more accessible. What would you like to know about it?",
+  sourceUrl: "https://github.com/dericko/react-rails-askmybook",
+  sourceText: "github.com/dericko",
+  credits: "For personal + educational use only. I don't own this book nor any rights to it 🙃",
 };

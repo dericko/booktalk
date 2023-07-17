@@ -1,55 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./App.css";
-import { BOOK_INFO, API, COPY } from "../constants.js";
+import { BOOK_INFO, API, COPY } from "../constants";
+import { useTypingEffect } from "../hooks/useTypingEffect";
+import { Footer } from "./Footer";
+import { Header } from "./Header";
+import { AskButtons } from "./AskButtons";
+import { AnswerArea } from "./AnswerArea";
 
 const getRandomQuestion = () =>
   BOOK_INFO.defaultQuestions[
     Math.floor(Math.random() * BOOK_INFO.defaultQuestions.length)
   ];
-
-const Header = ({ handleReset }) => (
-  <div className="HeadingContainer">
-    <a href={BOOK_INFO.amazonLink}>
-      <img src={BOOK_INFO.imageUrl} alt={BOOK_INFO.imageAlt} />
-    </a>
-    <a href="/" onClick={handleReset}>
-      <h1>{COPY.heading}</h1>
-    </a>
-  </div>
-);
-
-const Footer = () => (
-  <>
-    <label className="Credits">
-      Based on <a href="https://askmybook.com">askmybook.com</a> | View source:{" "}
-      <a href="https://github.com/dericko/rera-askmybook">github.com/dericko</a>
-    </label>
-    <label className="Credits">
-      For entertainment only. I don't own this book nor any rights to it.
-    </label>
-  </>
-);
-
-const randomInt = (min, max) => min + Math.floor((max - min) * Math.random());
-
-const useTypingEffect = (text) => {
-  const [isTyping, setIsTyping] = useState(false);
-  const [index, setIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  useEffect(() => {
-    if (index < text.length) {
-      setIsTyping(true);
-      setTimeout(() => {
-        setDisplayText(displayText + text[index]);
-        setIndex(index + 1);
-      }, randomInt(20, 60));
-    } else {
-      setIsTyping(false);
-    }
-  }, [text, index, displayText]);
-  return { isTyping, setIndex, displayText, setDisplayText };
-};
 
 const App = () => {
   const [answer, setAnswer] = useState("");
@@ -59,8 +21,12 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef();
 
-  const { isTyping, setIndex, displayText, setDisplayText } =
-    useTypingEffect(answer);
+  const {
+    isTyping,
+    setIndex,
+    displayText: answerText,
+    setDisplayText: setAnswerText,
+  } = useTypingEffect(answer);
 
   useEffect(() => {
     if (questionId) {
@@ -84,7 +50,7 @@ const App = () => {
 
   const handleReset = () => {
     setAnswer("");
-    setDisplayText("");
+    setAnswerText("");
     navigate("/");
     setIndex(0);
     inputRef.current.focus();
@@ -93,7 +59,7 @@ const App = () => {
   const handleAskQuestion = async (question) => {
     setInputValue(question);
     setIsLoading(true);
-    setDisplayText("");
+    setAnswerText("");
     try {
       const token = document.querySelector('meta[name="csrf-token"]').content;
       const response = await fetch(`${API}/ask`, {
@@ -112,6 +78,7 @@ const App = () => {
       console.error(error);
     }
   };
+  const finishedShowingAnswer = answerText.length > 0 && !isTyping;
 
   return (
     <div className="AppContainer">
@@ -119,45 +86,29 @@ const App = () => {
       <div className="AskContainer">
         <label className="Description">{COPY.description}</label>
         <textarea
+          className="QuestionInput"
           autoFocus
           ref={inputRef}
-          className="QuestionInput"
           value={inputValue}
           onChange={handleOnChange}
           pattern="\w+"
           disabled={isLoading}
         />
-        {displayText.length === 0 && (
-          <div className="Buttons">
-            <button
-              className="AskButton"
-              disabled={isLoading || isTyping}
-              onClick={() => handleAskQuestion(inputValue)}
-            >
-              {isLoading ? "Asking..." : "Ask Question"}
-            </button>
-            <button
-              className="LuckyButton"
-              disabled={isLoading || isTyping}
-              onClick={() => {
-                handleAskQuestion(getRandomQuestion());
-              }}
-            >
-              I'm Feeling Lucky
-            </button>
-          </div>
-        )}
-        {!isLoading && (
-          <div className="AnswerContainer">
-            {displayText && <strong>Answer: </strong>}
-            {displayText}
-          </div>
-        )}
-        {displayText.length > 0 && !isTyping && (
-          <button className="ResetButton" onClick={handleReset}>
-            Ask another question
-          </button>
-        )}
+        <AskButtons
+          isHidden={answerText.length !== 0}
+          isDisabled={isLoading || isTyping}
+          onClickAsk={() => handleAskQuestion(inputValue)}
+          onClickLucky={() => {
+            handleAskQuestion(getRandomQuestion());
+          }}
+          isLoading={isLoading}
+        />
+        <AnswerArea
+          isLoading={isLoading}
+          answerText={answerText}
+          shouldDisplayReset={finishedShowingAnswer}
+          onClickReset={handleReset}
+        />
       </div>
       <Footer />
     </div>

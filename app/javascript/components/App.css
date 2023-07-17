@@ -27,36 +27,6 @@
 .AskContainer {
   margin: 1rem auto;
   max-width: 600px;
-
-  & .Buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-}
-
-.AskButton, .ResetButton {
-  color: white;
-  background: black;
-  &:disabled {
-    background: #aaa;
-  }
-}
-
-.LuckyButton {
-  background: #eee;
-  color: black;
-  &:disabled {
-    background: #ddd;
-    color: #aaa;
-  }
-}
-
-.AnswerContainer, .ResetButton {
-  margin-top: 1rem;
-  display: block;
-  text-align: left;
 }
 
 .Description {
