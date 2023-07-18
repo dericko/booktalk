@@ -1,6 +1,6 @@
 # README
 
-Based on [askmybook.com](https://askmybook.com/)(askmybook.com). Rebuilding with react/rails.
+Based on [askmybook.com](https://askmybook.com/). Rebuilding with react/rails.
 
 ## Dependencies
 See `Gemfile` and `package.json` for dependencies. Install them with:
